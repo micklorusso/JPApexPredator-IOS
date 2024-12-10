@@ -6,6 +6,7 @@
 //
 
 import SwiftUICore
+import MapKit
 
 class ApexPredatorModel: Decodable, Identifiable {
     let id: Int
@@ -16,28 +17,46 @@ class ApexPredatorModel: Decodable, Identifiable {
     let movies: [String]
     let movieScenes: [MovieScene]
     let link: String
-    
+
     var image: String {
         name.lowercased().replacingOccurrences(of: " ", with: "")
     }
     
-    struct MovieScene: Decodable {
+    var location: CLLocationCoordinate2D {
+        CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
+
+    struct MovieScene: Decodable, Identifiable {
         let id: Int
         let movie: String
         let sceneDescription: String
     }
+
+}
+
+enum PredatorType: String, Decodable, Identifiable, CaseIterable {
+    case all
+    case land
+    case sea
+    case air
+
+    var id: PredatorType { self }
+
+    var color: Color {
+        switch self {
+        case .land: return Color.brown
+        case .sea: return Color.blue
+        case .air: return Color.teal
+        case .all: return Color.black
+        }
+    }
     
-    enum PredatorType: String, Decodable {
-        case land
-        case sea
-        case air
-        
-        var color: Color {
-            switch self {
-            case .land: return Color.brown
-            case .sea: return Color.blue
-            case .air: return Color.teal
-            }
+    var icon: String {
+        switch self {
+        case .land: return "leaf.fill"
+        case .sea: return "drop.fill"
+        case .air: return "wind"
+        case .all: return "square.stack.3d.up.fill"
         }
     }
 }
