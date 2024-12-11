@@ -12,34 +12,64 @@ struct PredatorMap: View {
     let predators = Predators()
     @State var position: MapCameraPosition
     @State var satellite: Bool = false
+    @State private var selectedPredator: ApexPredatorModel? = nil
     
     var body: some View {
-        Map(position: $position) {
-            ForEach(predators.apexPredators) {
-                predator in
-                Annotation(predator.name, coordinate: predator.location) {
-                    Image(predator.image)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 100)
-                        .shadow(color: .white, radius: 5)
-                        .scaleEffect(x: -1)
+        ZStack {
+            Map(position: $position) {
+                ForEach(predators.apexPredators) {
+                    predator in
+                    Annotation(predator.name, coordinate: predator.location) {
+                        Button {
+                            selectedPredator = predator
+                        } label: {
+                            Image(predator.image)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 100)
+                                .shadow(color: .white, radius: 5)
+                                .scaleEffect(x: -1)
+                        }
+                    }
                 }
             }
-        }
-        .toolbarBackground(.automatic)
-        .overlay(alignment: .bottomTrailing) {
-            Button {
-                satellite.toggle()
-            } label: {
-                Image(systemName: satellite ? "globe.americas.fill" : "globe.americas").font(.largeTitle)
-                    .imageScale(.large)
-                    .background(.thinMaterial)
-                    .padding()
+            .toolbarBackground(.automatic)
+            .overlay(alignment: .bottomTrailing) {
+                Button {
+                    satellite.toggle()
+                } label: {
+                    Image(systemName: satellite ? "globe.americas.fill" : "globe.americas").font(.largeTitle)
+                        .imageScale(.large)
+                        .background(.thinMaterial)
+                        .padding()
                     
+                }
+            }
+            .mapStyle(satellite ? MapStyle.imagery(elevation: .realistic) : MapStyle.standard(elevation: .realistic))
+            
+            if let predator = selectedPredator {
+                VStack {
+                    Spacer()
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text(predator.name)
+                            .font(.headline)
+                        Text("Location: \(predator.location.latitude), \(predator.location.longitude)")
+                            .font(.subheadline)
+                    }
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(.thinMaterial)
+                    .cornerRadius(10)
+                    .shadow(radius: 10)
+                    .padding()
+                    .onTapGesture {
+                        selectedPredator = nil
+                    }
+                }
+                .transition(.move(edge: .bottom))
+                .animation(.easeInOut, value: selectedPredator)
             }
         }
-        .mapStyle(satellite ? MapStyle.imagery(elevation: .realistic) : MapStyle.standard(elevation: .realistic))
     }
 }
 

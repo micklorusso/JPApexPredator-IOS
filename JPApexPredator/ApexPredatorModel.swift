@@ -8,7 +8,17 @@
 import SwiftUICore
 import MapKit
 
-class ApexPredatorModel: Decodable, Identifiable {
+class ApexPredatorModel: Decodable, Identifiable, Equatable {
+    static let movies = [
+        "All Movies",
+        "Jurassic Park",
+        "The Lost World: Jurassic Park",
+        "Jurassic Park III",
+        "Jurassic World",
+        "Jurassic World: Fallen Kingdom",
+        "Jurassic World: Dominion"
+    ]
+    
     let id: Int
     let name: String
     let type: PredatorType
@@ -18,6 +28,10 @@ class ApexPredatorModel: Decodable, Identifiable {
     let movieScenes: [MovieScene]
     let link: String
 
+    static func == (lhs: ApexPredatorModel, rhs: ApexPredatorModel) -> Bool {
+        lhs.id == rhs.id
+    }
+    
     var image: String {
         name.lowercased().replacingOccurrences(of: " ", with: "")
     }

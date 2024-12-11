@@ -32,19 +32,33 @@ class Predators {
             }
         }
     }
+    
+    func sort(by alphabetical: Bool) {
+        apexPredators.sort { alphabetical ? $0.name < $1.name : $0.id < $1.id }
+    }
+    
+    func filter(for predatorType: PredatorType) {
+        filteredPredators = apexPredators.filter { predator in predator.type == predatorType || predatorType == .all
+        }
+    }
+    
+    func filterByMovie(_ movieName: String) {
+        filteredPredators = filteredPredators.filter { predator in predator.movies.contains(movieName) || movieName == "All Movies"
+        }
+    }
 
     func filter(for searchText: String) -> [ApexPredatorModel] {
         return filteredPredators.filter {
             searchText.isEmpty || $0.name.contains(searchText)
         }
     }
-
-    func filter(for predatorType: PredatorType) {
-        filteredPredators = apexPredators.filter { predator in predator.type == predatorType || predatorType == .all
+    
+    func deletePredators(at offsets: IndexSet, filteredList: [ApexPredatorModel]) {
+        for index in offsets {
+            let predatorToDelete = filteredList[index]
+            if let originalIndex = apexPredators.firstIndex(where: { $0.id == predatorToDelete.id }) {
+                apexPredators.remove(at: originalIndex)
+            }
         }
-    }
-
-    func sort(by alphabetical: Bool) {
-        apexPredators.sort { alphabetical ? $0.name < $1.name : $0.id < $1.id }
     }
 }
